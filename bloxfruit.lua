@@ -1,73 +1,83 @@
-local Frame = script.Parent  -- Main GUI
-local AutoFarmButton = Frame:FindFirstChild("AutoFarmButton")  -- Auto Farm
-local AutoCollectFruitButton = Frame:FindFirstChild("AutoCollectFruitButton")  -- Collect Fruits
-local AutoRollFruitButton = Frame:FindFirstChild("AutoRollFruitButton")  -- Roll Fruits
-local AutoCollectChestsButton = Frame:FindFirstChild("AutoCollectChestsButton")  -- Collect Chests
-local AutoClickButton = Frame:FindFirstChild("AutoClickButton")  -- Auto Click
-local ClickDelaySlider = Frame:FindFirstChild("ClickDelaySlider")  -- Click Delay Slider
+-- Load Orion UI Library
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+local Window = OrionLib:MakeWindow({Name = "🔥 Blox Fruits Script 🔥", HidePremium = false, SaveConfig = true, ConfigFolder = "BloxFruits"})
 
--- Set GUI Background to Blue
-Frame.BackgroundColor3 = Color3.fromRGB(0, 102, 255)
+-- Tabs & Sections
+local AutoTab = Window:MakeTab({Name = "Auto Features", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 
--- Toggle Variables
-local autoFarming = false
-local autoCollectingFruits = false
-local autoRollingFruits = false
-local autoCollectingChests = false
-local autoClicking = false
-local clickDelay = 1  -- Default 1-second delay
+local AutoFarmSection = AutoTab:AddSection({Name = "Auto Farming"})
+local AutoFruitSection = AutoTab:AddSection({Name = "Auto Fruit"})
 
--- Auto Farm Toggle
-AutoFarmButton.MouseButton1Click:Connect(function()
-    autoFarming = not autoFarming
-    if autoFarming then
-        print("✅ Auto Farming Enabled")
-    else
-        print("❌ Auto Farming Disabled")
+-- Variables
+local autoFarmEnabled = false
+local autoClickEnabled = false
+local autoFruitEnabled = false
+
+-- Auto Farm Function
+local function autoFarm()
+    while autoFarmEnabled do
+        wait(0.5)
+        for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+            if enemy:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+                wait(0.2)
+            end
+        end
     end
-end)
+end
 
--- Auto Collect Fruits Toggle
-AutoCollectFruitButton.MouseButton1Click:Connect(function()
-    autoCollectingFruits = not autoCollectingFruits
-    if autoCollectingFruits then
-        print("✅ Auto Collect Fruits Enabled")
-    else
-        print("❌ Auto Collect Fruits Disabled")
+-- Auto Click Function
+local function autoClick()
+    while autoClickEnabled do
+        wait(1) -- Clicks every 1 second
+        local tool = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+        if tool and tool:IsA("Tool") then
+            tool:Activate()
+        end
     end
-end)
+end
 
--- Auto Roll Fruits Toggle
-AutoRollFruitButton.MouseButton1Click:Connect(function()
-    autoRollingFruits = not autoRollingFruits
-    if autoRollingFruits then
-        print("✅ Auto Roll Fruits Enabled")
-    else
-        print("❌ Auto Roll Fruits Disabled")
+-- Auto Collect Fruits Function
+local function autoCollectFruits()
+    while autoFruitEnabled do
+        wait(1)
+        for _, fruit in pairs(game.Workspace:GetChildren()) do
+            if fruit:IsA("Tool") then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = fruit.Handle.CFrame
+                wait(1)
+                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, fruit.Handle, 0)
+                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, fruit.Handle, 1)
+            end
+        end
     end
-end)
+end
 
--- Auto Collect Chests Toggle
-AutoCollectChestsButton.MouseButton1Click:Connect(function()
-    autoCollectingChests = not autoCollectingChests
-    if autoCollectingChests then
-        print("✅ Auto Collect Chests Enabled")
-    else
-        print("❌ Auto Collect Chests Disabled")
+-- GUI Toggles
+AutoFarmSection:AddToggle({
+    Name = "Auto Farm",
+    Default = false,
+    Callback = function(state)
+        autoFarmEnabled = state
+        if state then spawn(autoFarm) end
     end
-end)
+})
 
--- Auto Click Toggle
-AutoClickButton.MouseButton1Click:Connect(function()
-    autoClicking = not autoClicking
-    while autoClicking do
-        print("🖱 Auto Click Triggered!")
-        wait(clickDelay) -- Uses the chosen delay
+AutoFarmSection:AddToggle({
+    Name = "Auto Click",
+    Default = false,
+    Callback = function(state)
+        autoClickEnabled = state
+        if state then spawn(autoClick) end
     end
-end)
+})
 
--- Click Delay Adjustment
-ClickDelaySlider.Changed:Connect(function(value)
-    clickDelay = value
-    print("⏳ Click Delay Set To: " .. clickDelay .. " seconds")
-end)
+AutoFruitSection:AddToggle({
+    Name = "Auto Collect Fruits",
+    Default = false,
+    Callback = function(state)
+        autoFruitEnabled = state
+        if state then spawn(autoCollectFruits) end
+    end
+})
+
+OrionLib:Init()

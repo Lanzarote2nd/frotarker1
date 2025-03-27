@@ -36,4 +36,8 @@ end
 
 -- Enable ESP for new players
 game.Players.PlayerAdded:Connect(enableESP)
+while true do
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Attack")
+    wait(0.1) -- Adjust attack speed
+end
 

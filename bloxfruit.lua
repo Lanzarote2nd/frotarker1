@@ -17,13 +17,13 @@ local function autoFarm()
     end
 end
 
--- Function: Auto Click (Attacks while farming)
+-- Function: Auto Click (Now Fixed)
 local function autoClick()
     while true do
-        wait(0.2)
-        local tool = player.Character:FindFirstChildOfClass("Tool")
-        if tool then
-            tool:Activate() -- Simulates clicking
+        wait(0.1)
+        local tool = player.Character and player.Character:FindFirstChildOfClass("Tool") -- Finds your weapon
+        if tool and tool:IsA("Tool") then
+            tool:Activate() -- Simulates clicking to attack
         end
     end
 end

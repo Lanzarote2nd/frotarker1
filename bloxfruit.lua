@@ -14,6 +14,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local autoFarmEnabled = false
 local autoClickEnabled = false
 local autoFruitEnabled = false
+local clickDelay = 1 -- Default auto-click delay (1 second)
 
 -- Auto Farm Function
 local function autoFarm()
@@ -28,10 +29,10 @@ local function autoFarm()
     end
 end
 
--- Auto Click Function
+-- Auto Click Function (Now with Custom Delay)
 local function autoClick()
     while autoClickEnabled do
-        wait(0.1)
+        wait(clickDelay) -- Uses the custom delay from the slider
         local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
         if tool and tool:IsA("Tool") then
             tool:Activate()
@@ -60,7 +61,7 @@ autoTab:NewToggle("Auto Farm", "Farms enemies automatically", function(state)
     if state then spawn(autoFarm) end
 end)
 
-autoTab:NewToggle("Auto Click", "Auto attacks enemies", function(state)
+autoTab:NewToggle("Auto Click", "Auto attacks every set time", function(state)
     autoClickEnabled = state
     if state then spawn(autoClick) end
 end)
@@ -69,5 +70,12 @@ autoTab:NewToggle("Auto Fruit Collect", "Collects fruits automatically", functio
     autoFruitEnabled = state
     if state then spawn(autoCollectFruits) end
 end)
+
+-- Slider to Set Auto Click Delay
+autoTab:NewSlider("Auto Click Delay", "Adjust the delay between clicks", 5, 0.1, function(value)
+    clickDelay = value
+    print("Auto Click Delay set to:", value, "seconds")
+end)
+
 
 

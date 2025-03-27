@@ -36,4 +36,3 @@ end
 
 -- Enable ESP for new players
 game.Players.PlayerAdded:Connect(enableESP)
-

@@ -5,7 +5,7 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
 -- Function for Auto Farming
-local function autoFarm()
+local function spawn(autoFarm)
     while true do
         for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
             if enemy:FindFirstChild("HumanoidRootPart") then
@@ -17,7 +17,7 @@ local function autoFarm()
 end
 
 -- Function for ESP (Seeing Players)
-local function enableESP()
+local function game.Players.PlayerAdded:Connect()
     for _, otherPlayer in pairs(game.Players:GetPlayers()) do
         if otherPlayer ~= player then
             local highlight = Instance.new("Highlight")
@@ -28,5 +28,5 @@ local function enableESP()
 end
 
 -- Start Functions
-autoFarm()
-enableESP()
+spawn(autoFarm)
+game.Players.PlayerAdded:Connect()

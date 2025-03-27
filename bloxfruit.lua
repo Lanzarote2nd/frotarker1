@@ -1,15 +1,6 @@
--- Load GUI Library
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local window = library.CreateLib("🔥 Blox Fruits Script 🔥", "DarkTheme")
-
--- Make GUI Movable
-library["MainFrame"].Draggable = true
-library["MainFrame"].Active = true
-library["MainFrame"].Selectabled = true
-
--- Tabs
-local mainTab = window:NewTab("Main")
-local autoTab = mainTab:NewSection("Auto Features")
+-- Load GUI Library (Orion Library)
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+local window = OrionLib:MakeWindow({Name = "🔥 Blox Fruits Script 🔥", HidePremium = false, SaveConfig = true, ConfigFolder = "BloxFruits"})
 
 -- Get Player
 local player = game.Players.LocalPlayer
@@ -60,27 +51,60 @@ local function autoCollectFruits()
     end
 end
 
--- Buttons in GUI
-autoTab:NewToggle("Auto Farm", "Farms enemies automatically", function(state)
-    autoFarmEnabled = state
-    if state then spawn(autoFarm) end
-end)
+-- Create Tabs
+local mainTab = window:MakeTab({Name = "Main", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 
-autoTab:NewToggle("Auto Click", "Auto attacks every set time", function(state)
-    autoClickEnabled = state
-    if state then spawn(autoClick) end
-end)
+-- Toggle Auto Farm
+mainTab:AddToggle({
+    Name = "Auto Farm",
+    Default = false,
+    Callback = function(state)
+        autoFarmEnabled = state
+        if state then spawn(autoFarm) end
+    end
+})
 
-autoTab:NewToggle("Auto Fruit Collect", "Collects fruits automatically", function(state)
-    autoFruitEnabled = state
-    if state then spawn(autoCollectFruits) end
-end)
+-- Toggle Auto Click
+mainTab:AddToggle({
+    Name = "Auto Click",
+    Default = false,
+    Callback = function(state)
+        autoClickEnabled = state
+        if state then spawn(autoClick) end
+    end
+})
+
+-- Toggle Auto Fruit Collect
+mainTab:AddToggle({
+    Name = "Auto Collect Fruits",
+    Default = false,
+    Callback = function(state)
+        autoFruitEnabled = state
+        if state then spawn(autoCollectFruits) end
+    end
+})
 
 -- Slider to Set Auto Click Delay
-autoTab:NewSlider("Auto Click Delay", "Adjust the delay between clicks", 5, 0.1, function(value)
-    clickDelay = value
-    print("Auto Click Delay set to:", value, "seconds")
-end)
+mainTab:AddSlider({
+    Name = "Auto Click Delay",
+    Min = 0.1,
+    Max = 5,
+    Default = 1,
+    Increment = 0.1,
+    Callback = function(value)
+        clickDelay = value
+        print("Auto Click Delay set to:", value, "seconds")
+    end
+})
 
+-- Button to Close GUI
+mainTab:AddButton({
+    Name = "Close GUI",
+    Callback = function()
+        OrionLib:Destroy()
+    end
+})
 
+-- Initialize GUI
+OrionLib:Init()
 

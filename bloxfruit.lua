@@ -1,35 +1,36 @@
--- Load GUI Library (Orion Library)
+-- Load Orion UI Library
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
-local window = OrionLib:MakeWindow({Name = "🔥 Blox Fruits Script 🔥", HidePremium = false, SaveConfig = true, ConfigFolder = "BloxFruits"})
-
--- Get Player
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+local window = OrionLib:MakeWindow({
+    Name = "🔥 Blox Fruits Script 🔥",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "BloxFruits"
+})
 
 -- Variables
 local autoFarmEnabled = false
 local autoClickEnabled = false
 local autoFruitEnabled = false
-local clickDelay = 1 -- Default auto-click delay (1 second)
+local clickDelay = 1
 
 -- Auto Farm Function
 local function autoFarm()
     while autoFarmEnabled do
-        wait(0.5)
+        task.wait(0.5)
         for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
-            if enemy:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart") then
-                character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
-                wait(0.2)
+            if enemy:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+                task.wait(0.2)
             end
         end
     end
 end
 
--- Auto Click Function (Now with Custom Delay)
+-- Auto Click Function
 local function autoClick()
     while autoClickEnabled do
-        wait(clickDelay) -- Uses the custom delay from the slider
-        local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
+        task.wait(clickDelay)
+        local tool = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
         if tool and tool:IsA("Tool") then
             tool:Activate()
         end
@@ -39,20 +40,26 @@ end
 -- Auto Collect Fruits Function
 local function autoCollectFruits()
     while autoFruitEnabled do
-        wait(1)
+        task.wait(1)
         for _, fruit in pairs(game.Workspace:GetChildren()) do
             if fruit:IsA("Tool") then
-                character.HumanoidRootPart.CFrame = fruit.Handle.CFrame
-                wait(1)
-                firetouchinterest(character.HumanoidRootPart, fruit.Handle, 0)
-                firetouchinterest(character.HumanoidRootPart, fruit.Handle, 1)
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = fruit.Handle.CFrame
+                task.wait(1)
+                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, fruit.Handle, 0)
+                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, fruit.Handle, 1)
             end
         end
     end
 end
 
--- Create Tabs
-local mainTab = window:MakeTab({Name = "Main", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+-- Create GUI Tabs & Elements
+local mainTab = window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+mainTab:AddLabel("🌟 Blox Fruits Script Loaded 🌟")
 
 -- Toggle Auto Farm
 mainTab:AddToggle({
@@ -60,7 +67,7 @@ mainTab:AddToggle({
     Default = false,
     Callback = function(state)
         autoFarmEnabled = state
-        if state then spawn(autoFarm) end
+        if state then task.spawn(autoFarm) end
     end
 })
 
@@ -70,17 +77,17 @@ mainTab:AddToggle({
     Default = false,
     Callback = function(state)
         autoClickEnabled = state
-        if state then spawn(autoClick) end
+        if state then task.spawn(autoClick) end
     end
 })
 
--- Toggle Auto Fruit Collect
+-- Toggle Auto Collect Fruits
 mainTab:AddToggle({
     Name = "Auto Collect Fruits",
     Default = false,
     Callback = function(state)
         autoFruitEnabled = state
-        if state then spawn(autoCollectFruits) end
+        if state then task.spawn(autoCollectFruits) end
     end
 })
 
@@ -93,7 +100,6 @@ mainTab:AddSlider({
     Increment = 0.1,
     Callback = function(value)
         clickDelay = value
-        print("Auto Click Delay set to:", value, "seconds")
     end
 })
 
@@ -107,4 +113,5 @@ mainTab:AddButton({
 
 -- Initialize GUI
 OrionLib:Init()
+
 

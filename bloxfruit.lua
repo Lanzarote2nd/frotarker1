@@ -36,13 +36,4 @@ end
 
 -- Enable ESP for new players
 game.Players.PlayerAdded:Connect(enableESP)
-while true do
-local VirtualInputManager = game:GetService("VirtualInputManager")
 
-while true do
-    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0) -- Simulates left mouse click
-    wait(0.1) -- Adjust click speed (Lower = Faster)
-    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-end
-    
-wait(math.random(0.1, 0.3))

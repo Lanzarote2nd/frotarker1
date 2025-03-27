@@ -1,6 +1,29 @@
--- Load GUI Library
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local window = library.CreateLib("🔥 Blox Fruits Script 🔥", "DarkTheme")
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "🔥 Blox Fruits Script 🔥",
+   LoadingTitle = "Loading...",
+   LoadingSubtitle = "By Developer",
+   ConfigurationSaving = {
+      Enabled = false
+   }
+})
+
+local Tab = Window:CreateTab("Main")
+
+Tab:CreateButton({
+   Name = "Test Button",
+   Callback = function()
+      print("Rayfield UI Works!")
+   end
+})
+
+Rayfield:Notify({
+   Title = "Blox Fruits Script",
+   Content = "🔥 GUI Loaded Successfully 🔥",
+   Duration = 5
+})
+
 
 -- Tabs
 local mainTab = window:NewTab("Main")

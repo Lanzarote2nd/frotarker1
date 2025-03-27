@@ -2,6 +2,11 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local window = library.CreateLib("🔥 Blox Fruits Script 🔥", "DarkTheme")
 
+-- Make GUI Movable
+library["MainFrame"].Draggable = true
+library["MainFrame"].Active = true
+library["MainFrame"].Selectabled = true
+
 -- Tabs
 local mainTab = window:NewTab("Main")
 local autoTab = mainTab:NewSection("Auto Features")

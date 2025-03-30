@@ -1,124 +1,87 @@
--- Create the Screen GUI (Full Screen)
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- Load Lunar UI Library
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local window = library.CreateLib("🔥 Blox Fruits Script 🔥", "DarkTheme")
 
--- Create Main Frame (Full Screen)
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(1, 0, 1, 0) -- Full screen
-Frame.Position = UDim2.new(0, 0, 0, 0)
-Frame.BackgroundTransparency = 0.3
-Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Lunar Dark Color
-Frame.Parent = ScreenGui
+-- Tabs
+local mainTab = window:NewTab("Main")
+local autoTab = mainTab:NewSection("Auto Features")
 
--- Create Hide/Show Button (Top Right)
-local HideButton = Instance.new("TextButton")
-HideButton.Size = UDim2.new(0, 50, 0, 25)
-HideButton.Position = UDim2.new(1, -55, 0, 5)
-HideButton.Text = "-"
-HideButton.Parent = Frame
+-- Get Player
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 
--- Create Auto Farm Button
-local AutoFarmButton = Instance.new("TextButton")
-AutoFarmButton.Size = UDim2.new(0, 200, 0, 50)
-AutoFarmButton.Position = UDim2.new(0.5, -100, 0.2, 0)
-AutoFarmButton.Text = "Auto Farm: OFF"
-AutoFarmButton.Parent = Frame
-
--- Create Auto Chest Button
-local AutoChestButton = Instance.new("TextButton")
-AutoChestButton.Size = UDim2.new(0, 200, 0, 50)
-AutoChestButton.Position = UDim2.new(0.5, -100, 0.35, 0)
-AutoChestButton.Text = "Auto Chest: OFF"
-AutoChestButton.Parent = Frame
-
--- Create Auto Click (Auto Attack) Button
-local AutoClickButton = Instance.new("TextButton")
-AutoClickButton.Size = UDim2.new(0, 200, 0, 50)
-AutoClickButton.Position = UDim2.new(0.5, -100, 0.5, 0)
-AutoClickButton.Text = "Auto Attack: OFF"
-AutoClickButton.Parent = Frame
-
--- Variables for Functionality
+-- Variables
 local autoFarmEnabled = false
-local autoChestEnabled = false
 local autoClickEnabled = false
-local frameVisible = true
+local autoChestEnabled = false
 
--- Auto Farm Function (Teleports player to NPCs for XP Farming)
+-- Auto Farm Function (Fixed)
 local function autoFarm()
     while autoFarmEnabled do
-        wait(1) -- Delay between farming
+        wait(0.5) -- Delay to prevent lag
         for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
-            if enemy:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character then
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
-                wait(0.5)
+            if enemy:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart") then
+                -- Move to Enemy & Attack
+                character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+                wait(0.2)
+
+                -- Simulate Attack (Click Weapon)
+                local tool = character:FindFirstChildOfClass("Tool")
+                if tool and tool:IsA("Tool") then
+                    tool:Activate()
+                end
             end
         end
     end
 end
 
--- Auto Chest Collect Function (Fixed)
-local function autoChest()
-    while autoChestEnabled do
-        wait(2) -- Delay for collecting chests
-        for _, chest in pairs(game.Workspace:GetChildren()) do
-            if chest:IsA("Model") and chest:FindFirstChild("TouchInterest") then
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = chest.TouchInterest.Parent.CFrame
-                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, chest.TouchInterest.Parent, 0)
-                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, chest.TouchInterest.Parent, 1)
-                wait(1)
-            end
-        end
-    end
-end
-
--- Auto Click (Auto Attack) Function
+-- Auto Click (Auto Attack) Function (Fixed)
 local function autoClick()
     while autoClickEnabled do
         wait(1) -- Click every 1 second
-        local tool = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+        local tool = character:FindFirstChildOfClass("Tool")
         if tool and tool:IsA("Tool") then
             tool:Activate()
         end
     end
 end
 
--- Toggle Auto Farm
-AutoFarmButton.MouseButton1Click:Connect(function()
-    autoFarmEnabled = not autoFarmEnabled
-    AutoFarmButton.Text = "Auto Farm: " .. (autoFarmEnabled and "ON" or "OFF")
-    if autoFarmEnabled then
-        spawn(autoFarm)
-    end
-end)
+-- Auto Collect Chest (Fixed)
+local function autoChest()
+    while autoChestEnabled do
+        wait(2) -- Delay to prevent rapid teleporting
+        for _, chest in pairs(game.Workspace:GetChildren()) do
+            if chest:IsA("Model") and chest:FindFirstChild("TouchInterest") then
+                -- Teleport to Chest
+                character.HumanoidRootPart.CFrame = chest.TouchInterest.Parent.CFrame
+                wait(1)
 
--- Toggle Auto Chest
-AutoChestButton.MouseButton1Click:Connect(function()
-    autoChestEnabled = not autoChestEnabled
-    AutoChestButton.Text = "Auto Chest: " .. (autoChestEnabled and "ON" or "OFF")
-    if autoChestEnabled then
-        spawn(autoChest)
-    end
-end)
-
--- Toggle Auto Click (Auto Attack)
-AutoClickButton.MouseButton1Click:Connect(function()
-    autoClickEnabled = not autoClickEnabled
-    AutoClickButton.Text = "Auto Attack: " .. (autoClickEnabled and "ON" or "OFF")
-    if autoClickEnabled then
-        spawn(autoClick)
-    end
-end)
-
--- Hide/Show GUI Button Function
-HideButton.MouseButton1Click:Connect(function()
-    frameVisible = not frameVisible
-    for _, child in pairs(Frame:GetChildren()) do
-        if child ~= HideButton then
-            child.Visible = frameVisible
+                -- Simulate Collecting Chest
+                firetouchinterest(character.HumanoidRootPart, chest.TouchInterest.Parent, 0)
+                firetouchinterest(character.HumanoidRootPart, chest.TouchInterest.Parent, 1)
+            end
         end
     end
-    HideButton.Text = frameVisible and "-" or "+"
+end
+
+-- GUI Toggle Buttons
+autoTab:NewToggle("Auto Farm", "Farms enemies automatically", function(state)
+    autoFarmEnabled = state
+    if state then spawn(autoFarm) end
 end)
 
+autoTab:NewToggle("Auto Click", "Auto attacks every 1 second", function(state)
+    autoClickEnabled = state
+    if state then spawn(autoClick) end
+end)
+
+autoTab:NewToggle("Auto Collect Chest", "Collects chests automatically", function(state)
+    autoChestEnabled = state
+    if state then spawn(autoChest) end
+end)
+
+-- Make GUI Movable
+window:NewTab("Settings"):NewButton("Move GUI", "Click to move the GUI", function()
+    library:ToggleUI()
+end)
 
